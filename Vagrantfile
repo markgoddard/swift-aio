@@ -43,12 +43,40 @@ Vagrant.configure("2") do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  config.vm.provider "virtualbox" do |vb|
+  config.vm.provider "virtualbox" do |virtualbox|
     # Display the VirtualBox GUI when booting the machine
-    vb.gui = true
-  
+    virtualbox.gui = true
+
     # Customize the amount of memory on the VM:
-    vb.memory = "4096"
+    virtualbox.memory = "4096"
+
+    # The following was adapted from http://unix.stackexchange.com/questions/176687/set-storage-size-on-creation-of-vm-virtualbox.
+    virtualbox.name = "swift-aio"
+    virtualbox.customize [
+      "storagectl", :id,
+      "--name", "SCSI Controller",
+      "--controller", "Lsilogic",
+      "--portcount", "16",
+      "--hostiocache", "on"
+    ]
+    virtualbox.customize [
+      "clonehd", "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vmdk",
+           "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi",
+      "--format", "VDI"
+    ]
+    virtualbox.customize [
+      "modifyhd", "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi",
+      "--resize", 30 * 1024
+    ]
+    virtualbox.customize [
+      "storageattach", :id,
+      "--storagectl", "SCSI Controller",
+      "--port", "0",
+      "--device", "0",
+      "--type", "hdd",
+      "--nonrotational", "on",
+      "--medium", "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi"
+    ]
   end
   #
   # View the documentation for the provider you are using for more
