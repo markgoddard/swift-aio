@@ -36,19 +36,11 @@ mktorrent -a $tracker -o big-file-leech.torrent big-file
 mkdir -p leech seed
 
 (cd seed &&
- aria2c \
-   --allow-overwrite \
-   --log aria2c.log \
-   --log-level info \
-   --bt-seed-unverified \
+ /vagrant/libtorrent-downloader.py \
    ../big-file-seed.torrent) > seed.log &
 
 (cd leech &&
- aria2c \
-   --allow-overwrite \
-   --log aria2c.log \
-   --log-level info \
-   --seed-time 0 \
+ /vagrant/libtorrent-downloader.py \
    ../big-file-leech.torrent) > leech.log &
 
 wait
