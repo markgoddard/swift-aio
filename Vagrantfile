@@ -52,31 +52,33 @@ Vagrant.configure("2") do |config|
 
     # The following was adapted from http://unix.stackexchange.com/questions/176687/set-storage-size-on-creation-of-vm-virtualbox.
     virtualbox.name = "swift-aio"
-    virtualbox.customize [
-      "storagectl", :id,
-      "--name", "SCSI Controller",
-      "--controller", "Lsilogic",
-      "--portcount", "16",
-      "--hostiocache", "on"
-    ]
-    virtualbox.customize [
-      "clonehd", "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vmdk",
-           "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi",
-      "--format", "VDI"
-    ]
-    virtualbox.customize [
-      "modifyhd", "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi",
-      "--resize", 30 * 1024
-    ]
-    virtualbox.customize [
-      "storageattach", :id,
-      "--storagectl", "SCSI Controller",
-      "--port", "0",
-      "--device", "0",
-      "--type", "hdd",
-      "--nonrotational", "on",
-      "--medium", "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi"
-    ]
+    if not File.file?("#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi")
+        virtualbox.customize [
+          "storagectl", :id,
+          "--name", "SCSI Controller",
+          "--controller", "Lsilogic",
+          "--portcount", "16",
+          "--hostiocache", "on"
+        ]
+        virtualbox.customize [
+          "clonehd", "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vmdk",
+          "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi",
+          "--format", "VDI"
+        ]
+        virtualbox.customize [
+          "modifyhd", "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi",
+          "--resize", 30 * 1024
+        ]
+        virtualbox.customize [
+          "storageattach", :id,
+          "--storagectl", "SCSI Controller",
+          "--port", "0",
+          "--device", "0",
+          "--type", "hdd",
+          "--nonrotational", "on",
+          "--medium", "#{ENV["HOME"]}/VirtualBox VMs/#{virtualbox.name}/ubuntu-xenial-16.04-cloudimg.vdi"
+        ]
+    end
   end
   #
   # View the documentation for the provider you are using for more
